@@ -2,7 +2,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const gridSize = 8;
-const tileSize = canvas.width / gridSize;
+const tileSize = canvas.width / gridSize; // Now 75px (600 / 8)
 const colors = ['red', 'blue', 'green', 'yellow', 'purple'];
 
 // Game state
@@ -12,7 +12,7 @@ let selectedTile = null;
 let gameTime = 60;
 let lightState = 'green';
 let lightTimer = 0;
-let gameStarted = false; // Track if game has started
+let gameStarted = false;
 
 // Display elements
 const scoreDisplay = document.getElementById('score');
@@ -55,7 +55,7 @@ function drawGrid() {
 
 // Handle clicks on canvas
 canvas.addEventListener('click', (event) => {
-    if (!gameStarted) return; // Ignore clicks until game starts
+    if (!gameStarted) return;
 
     if (lightState !== 'green') return;
 
@@ -154,7 +154,7 @@ function removeMatches() {
 
 // Game loop
 function update() {
-    if (!gameStarted) return; // Don’t update until game starts
+    if (!gameStarted) return;
 
     lightTimer += 1 / 60;
     if (lightTimer >= 5) {
@@ -177,8 +177,8 @@ function update() {
         score = 0;
         scoreDisplay.textContent = score;
         initGrid();
-        gameStarted = false; // Reset to start screen
-        startScreen.style.display = 'flex'; // Show start screen again
+        gameStarted = false;
+        startScreen.style.display = 'flex';
     }
 
     drawGrid();
@@ -188,10 +188,10 @@ function update() {
 // Start game on button click
 startButton.addEventListener('click', () => {
     gameStarted = true;
-    startScreen.style.display = 'none'; // Hide start screen
-    update(); // Start the game loop
+    startScreen.style.display = 'none';
+    update();
 });
 
 // Initialize the game but don’t start it
 initGrid();
-drawGrid(); // Draw initial grid as a preview
+drawGrid();
