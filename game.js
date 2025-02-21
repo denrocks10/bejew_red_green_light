@@ -31,6 +31,7 @@ const bombSound = document.getElementById('bombSound');
 // Initialize grid with colors and bombs
 function initGrid() {
     grid = [];
+    explodingTiles = []; // Clear any lingering effects
     for (let i = 0; i < gridSize; i++) {
         grid[i] = [];
         for (let j = 0; j < gridSize; j++) {
@@ -41,7 +42,7 @@ function initGrid() {
         }
     }
     console.log('Grid initialized:', grid);
-    removeMatches();
+    removeMatches(true); // Pass flag to skip effects on init
 }
 
 // Draw the grid
@@ -77,18 +78,21 @@ function drawGrid() {
         }
     }
 
-    for (let i = explodingTiles.length - 1; i >= 0; i--) {
-        const tile = explodingTiles[i];
-        const size = tileSize * (1 + tile.opacity);
-        ctx.fillStyle = `rgba(255, 255, 0, ${tile.opacity})`;
-        ctx.fillRect(
-            tile.x * tileSize - (size - tileSize) / 2,
-            tile.y * tileSize - (size - tileSize) / 2,
-            size - 2,
-            size - 2
-        );
-        tile.opacity -= 0.02;
-        if (tile.opacity <= 0) explodingTiles.splice(i, 1);
+    // Draw explosion effects only during gameplay
+    if (gameStarted) {
+        for (let i = explodingTiles.length - 1; i >= 0; i--) {
+            const tile = explodingTiles[i];
+            const size = tileSize * (1 + tile.opacity);
+            ctx.fillStyle = `rgba(255, 255, 255, ${tile.opacity})`; // White effect
+            ctx.fillRect(
+                tile.x * tileSize - (size - tileSize) / 2,
+                tile.y * tileSize - (size - tileSize) / 2,
+                size - 2,
+                size - 2
+            );
+            tile.opacity -= 0.02;
+            if (tile.opacity <= 0) explodingTiles.splice(i, 1);
+        }
     }
 }
 
@@ -219,11 +223,12 @@ function explodeBomb(x, y) {
         }
     }
     explodingTiles.push({ x, y, opacity: 1 });
+    grid[x][y] = { color: null, hasBomb: false }; // Ensure bomb tile is cleared
     score += 20;
 }
 
 // Remove matches and fill gaps
-function removeMatches() {
+function removeMatches(isInitial = false) {
     let changed = false;
     for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize - 2; x++) {
@@ -231,9 +236,11 @@ function removeMatches() {
                 grid[x][y].color === grid[x + 1][y].color &&
                 grid[x][y].color === grid[x + 2][y].color
             ) {
-                explodingTiles.push({ x: x, y: y, opacity: 0.7 });
-                explodingTiles.push({ x: x + 1, y: y, opacity: 0.7 });
-                explodingTiles.push({ x: x + 2, y: y, opacity: 0.7 });
+                if (!isInitial) {
+                    explodingTiles.push({ x: x, y: y, opacity: 0.7 });
+                    explodingTiles.push({ x: x + 1, y: y, opacity: 0.7 });
+                    explodingTiles.push({ x: x + 2, y: y, opacity: 0.7 });
+                }
                 grid[x][y].color = null;
                 grid[x + 1][y].color = null;
                 grid[x + 2][y].color = null;
@@ -247,9 +254,11 @@ function removeMatches() {
                 grid[x][y].color === grid[x][y + 1].color &&
                 grid[x][y].color === grid[x][y + 2].color
             ) {
-                explodingTiles.push({ x: x, y: y, opacity: 0.7 });
-                explodingTiles.push({ x: x, y: y + 1, opacity: 0.7 });
-                explodingTiles.push({ x: x, y: y + 2, opacity: 0.7 });
+                if (!isInitial) {
+                    explodingTiles.push({ x: x, y: y, opacity: 0.7 });
+                    explodingTiles.push({ x: x, y: y + 1, opacity: 0.7 });
+                    explodingTiles.push({ x: x, y: y + 2, opacity: 0.7 });
+                }
                 grid[x][y].color = null;
                 grid[x][y + 1].color = null;
                 grid[x][y + 2].color = null;
@@ -276,7 +285,7 @@ function removeMatches() {
             }
         }
     }
-    if (changed) {
+    if (changed && !isInitial) {
         handleBombs();
         removeMatches();
     }
