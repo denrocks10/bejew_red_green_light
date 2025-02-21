@@ -4,27 +4,39 @@
     <meta charset="UTF-8">
     <title>Gem Light Dash</title>
     <style>
+        body {
+            margin: 0; /* Remove default body margin */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0; /* Optional: light background */
+        }
+        #gameContainer {
+            position: relative; /* Contain canvas and overlay */
+            margin-top: 20px; /* Space from top */
+        }
         canvas {
             border: 1px solid black;
         }
         #gameInfo {
             font-family: Arial, sans-serif;
             margin-top: 10px;
+            font-size: 20px; /* Larger text for bigger game */
         }
         #startScreen {
             position: absolute;
             top: 0;
             left: 0;
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 0, 0, 0.7);
+            width: 600px; /* Match canvas width */
+            height: 600px; /* Match canvas height */
+            background: rgba(0, 0, 0, 0.5); /* Lighter overlay */
             display: flex;
             justify-content: center;
             align-items: center;
         }
         #startButton {
-            padding: 20px 40px;
-            font-size: 24px;
+            padding: 30px 60px; /* Bigger button */
+            font-size: 36px; /* Larger text */
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
@@ -37,18 +49,20 @@
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <div id="startScreen">
-        <button id="startButton">Start</button>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div id="startScreen">
+            <button id="startButton">Start</button>
+        </div>
     </div>
     <div id="gameInfo">
         Score: <span id="score">0</span> | 
         Time Left: <span id="timer">60</span>s | 
         Light: <span id="light">Green</span>
     </div>
-    <audio id="matchSound" src="match.wav" preload="auto"></audio>
-    <audio id="greenLightSound" src="green.wav" preload="auto"></audio>
-    <audio id="redLightSound" src="red.wav" preload="auto"></audio>
+    <audio id="matchSound" src="match.mp3" preload="auto"></audio>
+    <audio id="greenLightSound" src="green.mp3" preload="auto"></audio>
+    <audio id="redLightSound" src="red.mp3" preload="auto"></audio>
     <script src="game.js"></script>
 </body>
 </html>
