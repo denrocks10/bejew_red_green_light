@@ -5,15 +5,15 @@
     <title>Gem Light Dash</title>
     <style>
         body {
-            margin: 0; /* Remove default body margin */
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f0f0f0; /* Optional: light background */
+            background-color: #f0f0f0;
         }
         #gameContainer {
-            position: relative; /* Contain canvas and overlay */
-            margin-top: 20px; /* Space from top */
+            position: relative;
+            margin-top: 20px;
         }
         canvas {
             border: 1px solid black;
@@ -21,22 +21,22 @@
         #gameInfo {
             font-family: Arial, sans-serif;
             margin-top: 10px;
-            font-size: 20px; /* Larger text for bigger game */
+            font-size: 20px;
         }
         #startScreen {
             position: absolute;
             top: 0;
             left: 0;
-            width: 600px; /* Match canvas width */
-            height: 600px; /* Match canvas height */
-            background: rgba(0, 0, 0, 0.5); /* Lighter overlay */
+            width: 600px;
+            height: 600px;
+            background: rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
         }
         #startButton {
-            padding: 30px 60px; /* Bigger button */
-            font-size: 36px; /* Larger text */
+            padding: 30px 60px;
+            font-size: 36px;
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
@@ -63,6 +63,7 @@
     <audio id="matchSound" src="match.wav" preload="auto"></audio>
     <audio id="greenLightSound" src="green.wav" preload="auto"></audio>
     <audio id="redLightSound" src="red.wav" preload="auto"></audio>
+    <audio id="bombSound" src="bomb.wav" preload="auto"></audio>
     <script src="game.js"></script>
 </body>
 </html>
