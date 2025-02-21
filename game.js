@@ -31,7 +31,7 @@ const bombSound = document.getElementById('bombSound');
 // Initialize grid with colors and bombs
 function initGrid() {
     grid = [];
-    explodingTiles = []; // Clear any lingering effects
+    explodingTiles = [];
     for (let i = 0; i < gridSize; i++) {
         grid[i] = [];
         for (let j = 0; j < gridSize; j++) {
@@ -42,7 +42,7 @@ function initGrid() {
         }
     }
     console.log('Grid initialized:', grid);
-    removeMatches(true); // Pass flag to skip effects on init
+    removeMatches(true); // Skip effects on init
 }
 
 // Draw the grid
@@ -78,12 +78,11 @@ function drawGrid() {
         }
     }
 
-    // Draw explosion effects only during gameplay
     if (gameStarted) {
         for (let i = explodingTiles.length - 1; i >= 0; i--) {
             const tile = explodingTiles[i];
             const size = tileSize * (1 + tile.opacity);
-            ctx.fillStyle = `rgba(255, 255, 255, ${tile.opacity})`; // White effect
+            ctx.fillStyle = `rgba(255, 255, 255, ${tile.opacity})`;
             ctx.fillRect(
                 tile.x * tileSize - (size - tileSize) / 2,
                 tile.y * tileSize - (size - tileSize) / 2,
@@ -142,13 +141,13 @@ canvas.addEventListener('click', (event) => {
                 setTimeout(() => swapTiles(selectedTile.x, selectedTile.y, x, y), 300);
             } else {
                 score += 10;
+                removeMatches(); // Handle regular matches first
                 if (hasBombInMatch()) {
                     bombSound.play();
-                    setTimeout(handleBombs, 300);
+                    handleBombs(); // Handle bombs immediately after
                 } else {
                     matchSound.play();
                 }
-                removeMatches();
                 scoreDisplay.textContent = score;
             }
         }
@@ -197,33 +196,41 @@ function checkMatches() {
 
 // Handle bomb explosions
 function handleBombs() {
+    let bombsExploded = false;
     for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
             if (grid[x][y].hasBomb && grid[x][y].color === null) {
                 explodeBomb(x, y);
+                bombsExploded = true;
             }
         }
+    }
+    if (bombsExploded) {
+        console.log('Bombs exploded, rechecking matches');
+        removeMatches(); // Recheck after explosions
     }
 }
 
 // Explode bomb and clear surrounding tiles
 function explodeBomb(x, y) {
+    console.log('Exploding bomb at', x, y);
     const directions = [
         [-1, -1], [-1, 0], [-1, 1],
         [0, -1],           [0, 1],
         [1, -1],  [1, 0],  [1, 1]
     ];
+    explodingTiles.push({ x, y, opacity: 1 }); // Bomb tile effect
+    grid[x][y] = { color: null, hasBomb: false }; // Clear bomb tile
     for (const [dx, dy] of directions) {
         const newX = x + dx;
         const newY = y + dy;
         if (newX >= 0 && newX < gridSize && newY >= 0 && newY < gridSize) {
-            explodingTiles.push({ x: newX, y: newY, opacity: 1 });
-            grid[newX][newY] = { color: null, hasBomb: false };
+            console.log('Clearing tile at', newX, newY);
+            explodingTiles.push({ x: newX, y: newY, opacity: 1 }); // Effect on adjacent tiles
+            grid[newX][newY] = { color: null, hasBomb: false }; // Clear adjacent tile
             score += 5;
         }
     }
-    explodingTiles.push({ x, y, opacity: 1 });
-    grid[x][y] = { color: null, hasBomb: false }; // Ensure bomb tile is cleared
     score += 20;
 }
 
@@ -285,10 +292,7 @@ function removeMatches(isInitial = false) {
             }
         }
     }
-    if (changed && !isInitial) {
-        handleBombs();
-        removeMatches();
-    }
+    // Removed recursive call here to avoid overwriting bomb effects
 }
 
 // Game loop
