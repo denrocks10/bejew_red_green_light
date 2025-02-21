@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gem Light Dash</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+        #gameInfo {
+            font-family: Arial, sans-serif;
+            margin-top: 10px;
+        }
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #startButton {
+            padding: 20px 40px;
+            font-size: 24px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #startButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div id="startScreen">
+        <button id="startButton">Start</button>
+    </div>
+    <div id="gameInfo">
+        Score: <span id="score">0</span> | 
+        Time Left: <span id="timer">60</span>s | 
+        Light: <span id="light">Green</span>
+    </div>
+    <audio id="matchSound" src="match.wav" preload="auto"></audio>
+    <audio id="greenLightSound" src="green.wav" preload="auto"></audio>
+    <audio id="redLightSound" src="red.wav" preload="auto"></audio>
+    <script src="game.js"></script>
+</body>
+</html>
