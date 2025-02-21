@@ -30,7 +30,7 @@ const bombSound = document.getElementById('bombSound');
 
 // Initialize grid with colors and bombs
 function initGrid() {
-    grid = []; // Ensure grid is reset
+    grid = [];
     for (let i = 0; i < gridSize; i++) {
         grid[i] = [];
         for (let j = 0; j < gridSize; j++) {
@@ -40,7 +40,7 @@ function initGrid() {
             };
         }
     }
-    console.log('Grid initialized:', grid); // Debug log
+    console.log('Grid initialized:', grid);
     removeMatches();
 }
 
@@ -50,7 +50,7 @@ function drawGrid() {
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
             if (!grid[i] || !grid[i][j]) {
-                console.error('Grid missing at', i, j); // Debug if grid is broken
+                console.error('Grid missing at', i, j);
                 continue;
             }
             ctx.fillStyle = grid[i][j].color || 'gray';
@@ -77,7 +77,6 @@ function drawGrid() {
         }
     }
 
-    // Draw explosion effects
     for (let i = explodingTiles.length - 1; i >= 0; i--) {
         const tile = explodingTiles[i];
         const size = tileSize * (1 + tile.opacity);
@@ -310,7 +309,7 @@ function update() {
         initGrid();
         gameStarted = false;
         startScreen.style.display = 'flex';
-        drawGrid(); // Redraw grid after reset
+        drawGrid();
     }
 
     drawGrid();
@@ -319,13 +318,13 @@ function update() {
 
 // Start game on button click
 startButton.addEventListener('click', () => {
-    console.log('Start button clicked'); // Debug log
+    console.log('Start button clicked');
     gameStarted = true;
     startScreen.style.display = 'none';
     update();
 });
 
 // Initialize the game but don’t start it
-console.log('Initializing game...'); // Debug log
+console.log('Initializing game...');
 initGrid();
 drawGrid();
