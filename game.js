@@ -13,6 +13,7 @@ let gameTime = 60;
 let lightState = 'green';
 let lightTimer = 0;
 let gameStarted = false;
+let explodingTiles = []; // Track tiles for explosion animation
 
 // Display elements
 const scoreDisplay = document.getElementById('score');
@@ -25,7 +26,7 @@ const startButton = document.getElementById('startButton');
 const matchSound = document.getElementById('matchSound');
 const greenLightSound = document.getElementById('greenLightSound');
 const redLightSound = document.getElementById('redLightSound');
-const bombSound = document.getElementById('bombSound'); // New bomb sound
+const bombSound = document.getElementById('bombSound');
 
 // Initialize grid with colors and bombs
 function initGrid() {
@@ -46,7 +47,7 @@ function drawGrid() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
-            ctx.fillStyle = grid[i][j].color;
+            ctx.fillStyle = grid[i][j].color || 'gray'; // Gray for empty tiles during animation
             ctx.fillRect(i * tileSize, j * tileSize, tileSize - 2, tileSize - 2);
 
             if (grid[i][j].hasBomb) {
@@ -69,6 +70,20 @@ function drawGrid() {
             }
         }
     }
+
+    // Draw explosion effects
+    for (let i = explodingTiles.length - 1; i >= 0; i--) {
+        const tile = explodingTiles[i];
+        ctx.fillStyle = `rgba(255, 255, 0, ${tile.opacity})`; // Yellow flash
+        ctx.fillRect(
+            tile.x * tileSize,
+            tile.y * tileSize,
+            tileSize - 2,
+            tileSize - 2
+        );
+        tile.opacity -= 0.05; // Fade out
+        if (tile.opacity <= 0) explodingTiles.splice(i, 1); // Remove when faded
+    }
 }
 
 // Handle clicks on canvas
@@ -90,9 +105,11 @@ canvas.addEventListener('click', (event) => {
                 setTimeout(() => swapTiles(selectedTile.x, selectedTile.y, x, y), 300);
             } else {
                 score += 10;
-                handleBombs();
+                matchSound.play(); // Play match sound first
+                setTimeout(() => {
+                    handleBombs(); // Handle bombs after delay
+                }, 300); // Delay bomb processing to separate sounds
                 scoreDisplay.textContent = score;
-                matchSound.play();
                 removeMatches();
             }
         }
@@ -152,7 +169,7 @@ function handleBombs() {
 
 // Explode bomb and clear surrounding tiles
 function explodeBomb(x, y) {
-    bombSound.play(); // Play explosion sound
+    bombSound.play(); // Play bomb sound (delayed by setTimeout)
     const directions = [
         [-1, -1], [-1, 0], [-1, 1],
         [0, -1],           [0, 1],
@@ -162,10 +179,12 @@ function explodeBomb(x, y) {
         const newX = x + dx;
         const newY = y + dy;
         if (newX >= 0 && newX < gridSize && newY >= 0 && newY < gridSize) {
+            explodingTiles.push({ x: newX, y: newY, opacity: 1 }); // Add to explosion animation
             grid[newX][newY] = { color: null, hasBomb: false };
             score += 5;
         }
     }
+    explodingTiles.push({ x, y, opacity: 1 }); // Include bomb tile in animation
     score += 20;
 }
 
@@ -178,6 +197,9 @@ function removeMatches() {
                 grid[x][y].color === grid[x + 1][y].color &&
                 grid[x][y].color === grid[x + 2][y].color
             ) {
+                explodingTiles.push({ x: x, y: y, opacity: 0.7 }); // Subtle fade for regular matches
+                explodingTiles.push({ x: x + 1, y: y, opacity: 0.7 });
+                explodingTiles.push({ x: x + 2, y: y, opacity: 0.7 });
                 grid[x][y].color = null;
                 grid[x + 1][y].color = null;
                 grid[x + 2][y].color = null;
@@ -191,6 +213,9 @@ function removeMatches() {
                 grid[x][y].color === grid[x][y + 1].color &&
                 grid[x][y].color === grid[x][y + 2].color
             ) {
+                explodingTiles.push({ x: x, y: y, opacity: 0.7 });
+                explodingTiles.push({ x: x, y: y + 1, opacity: 0.7 });
+                explodingTiles.push({ x: x, y: y + 2, opacity: 0.7 });
                 grid[x][y].color = null;
                 grid[x][y + 1].color = null;
                 grid[x][y + 2].color = null;
